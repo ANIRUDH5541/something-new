@@ -4,7 +4,6 @@ import { Inter } from 'next/font/google';
 import { ThemeProvider } from '@/components/theme-provider';
 import Navbar from '@/components/navbar';
 import { Toaster } from '@/components/ui/toaster';
-import { SessionProvider } from "next-auth/react";
 
 const inter = Inter({ subsets: ['latin'] });
 

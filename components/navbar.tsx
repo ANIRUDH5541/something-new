@@ -1,15 +1,12 @@
-"use client";
 
 import Link from "next/link";
-import { useState } from "react";
 import { ShoppingCart, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { usePathname } from "next/navigation";
-import LoginDialog from "./LoginDialog";
+// import { usePathname } from "next/navigation";
+import LoginForm from "@/app/components/LoginForm";
 
 export default function Navbar() {
-  const pathname = usePathname();
-  const [showLoginDialog, setShowLoginDialog] = useState(false);
+  // const pathname = usePathname();
 
   return (
     <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-sm border-b">
@@ -19,26 +16,23 @@ export default function Navbar() {
             Something New
           </Link>
         </div>
-        
+
         <div className="flex-1 flex justify-center">
-          <Link 
-            href="/" 
-            className={`text-lg font-medium ${pathname === '/' ? 'text-primary' : 'text-muted-foreground'} hover:text-primary transition-colors`}
+          <Link
+            href="/"
+            className={`text-lg font-medium  hover:text-primary transition-colors`}
           >
             Explore
           </Link>
         </div>
-        
+
         <div className="flex-1 flex items-center justify-end gap-4">
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            onClick={() => setShowLoginDialog(true)}
-          >
-            <User className="h-5 w-5" />
-            <span className="sr-only">Login</span>
-          </Button>
-          
+
+            {/* <User className="h-5 w-5" /> */}
+            {/* <span className="sr-only"> */}
+              <LoginForm />
+            {/* </span> */}
+
           <Button variant="ghost" size="icon" asChild>
             <Link href="/cart">
               <ShoppingCart className="h-5 w-5" />
@@ -47,11 +41,6 @@ export default function Navbar() {
           </Button>
         </div>
       </div>
-
-      <LoginDialog 
-        open={showLoginDialog} 
-        onOpenChange={setShowLoginDialog}
-      />
     </nav>
   );
 }
