@@ -1,9 +1,15 @@
+"use client"
 import Link from "next/link";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { crochetItems } from "@/lib/data";
 import { Heart } from "lucide-react";
+import ProductFilter from "@/components/Productfilter";
 
 export default function Home() {
+  function setFilters(filters: any): void {
+    throw new Error("Function not implemented.");
+  }
+
   return (
     <div className="min-h-screen flex flex-col">
       {/* Hero Video Section */}
@@ -34,7 +40,8 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Products Section */}
+      {/* Products Section with Filters */}
+      
       <div 
         id="products"
         className="min-h-screen flex flex-col bg-cover bg-center bg-fixed relative"
@@ -48,30 +55,40 @@ export default function Home() {
         <div className="container mx-auto pt-12 pb-6 px-4 relative z-10">
           <h2 className="text-3xl font-bold text-center mb-8 text-white">Our Collection</h2>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-y-5 ">
-            {crochetItems.map((item) => (
-              <Link href={`/product/${item.id}`} key={item.id} className="block">
-                <Card className="h-full overflow-hidden shadow-lg transition-all duration-300 hover:translate-y-[-5px] cursor-pointer max-w-[260px] mx-auto">
-                  <div className="relative">
-                    <div className="aspect-square w-full overflow-hidden">
-                      <img 
-                        src={item.image} 
-                        alt={item.name} 
-                        className="w-full h-40 object-cover transition-transform duration-300 hover:scale-105"
-                      />
-                    </div>
-                  </div>
-                  <CardContent className="pt-1.5 px-3">
-                    <h2 className="text-lg font-semibold hover:underline truncate">{item.name}</h2>
-                    <p className="text-muted-foreground mt-0.5 text-sm line-clamp-2">{item.description}</p>
-                  </CardContent>
-                  <CardFooter className="flex justify-between items-center px-3 py-1.5">
-                    <span className="text-base font-medium">${item.price.toFixed(2)}</span>
-                    <span className="text-xs text-muted-foreground">View Details</span>
-                  </CardFooter>
-                </Card>
-              </Link>
-            ))}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            {/* Filters Sidebar */}
+            <div className="md:col-span-1">
+              <ProductFilter onFilterChange={setFilters} />
+            </div>
+
+            {/* Products Grid */}
+            <div className="md:col-span-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {crochetItems.map((item) => (
+                  <Link href={`/product/${item.id}`} key={item.id} className="block">
+                    <Card className="h-full overflow-hidden shadow-lg transition-all duration-300 hover:translate-y-[-5px] cursor-pointer max-w-[260px] mx-auto">
+                      <div className="relative">
+                        <div className="aspect-square w-full overflow-hidden">
+                          <img 
+                            src={item.image} 
+                            alt={item.name} 
+                            className="w-full h-40 object-cover transition-transform duration-300 hover:scale-105"
+                          />
+                        </div>
+                      </div>
+                      <CardContent className="pt-1.5 px-3">
+                        <h2 className="text-lg font-semibold hover:underline truncate">{item.name}</h2>
+                        <p className="text-muted-foreground mt-0.5 text-sm line-clamp-2">{item.description}</p>
+                      </CardContent>
+                      <CardFooter className="flex justify-between items-center px-3 py-1.5">
+                        <span className="text-base font-medium">${item.price.toFixed(2)}</span>
+                        <span className="text-xs text-muted-foreground">View Details</span>
+                      </CardFooter>
+                    </Card>
+                  </Link>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </div>

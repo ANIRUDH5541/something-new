@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { ArrowLeft, ShoppingCart } from "lucide-react";
+import { ArrowLeft, ShoppingCart, Star, Truck, Shield, RotateCcw, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { CrochetItem } from "@/lib/data";
@@ -15,33 +15,28 @@ export default function ProductClient({ product }: ProductClientProps) {
   const router = useRouter();
   const { toast } = useToast();
   const [isAdding, setIsAdding] = useState(false);
+  const [quantity, setQuantity] = useState(1);
+  const [selectedImage, setSelectedImage] = useState(product.image);
 
   const handleAddToCart = () => {
     setIsAdding(true);
     
-    // Get existing cart items from localStorage
     const existingCartItems = JSON.parse(localStorage.getItem('cartItems') || '[]');
-    
-    // Check if item already exists in cart
     const existingItemIndex = existingCartItems.findIndex(
       (item: any) => item.id === product.id
     );
     
     if (existingItemIndex >= 0) {
-      // If item exists, increase quantity
-      existingCartItems[existingItemIndex].quantity += 1;
+      existingCartItems[existingItemIndex].quantity += quantity;
     } else {
-      // If item doesn't exist, add it with quantity 1
       existingCartItems.push({
         ...product,
-        quantity: 1
+        quantity
       });
     }
     
-    // Save updated cart back to localStorage
     localStorage.setItem('cartItems', JSON.stringify(existingCartItems));
     
-    // Show success toast
     toast({
       title: "Added to cart",
       description: `${product.name} has been added to your cart.`,
@@ -53,48 +48,109 @@ export default function ProductClient({ product }: ProductClientProps) {
   };
 
   return (
-    <div className="container mx-auto pt-24 px-4 min-h-screen">
-      <Button 
-        variant="ghost" 
-        onClick={() => router.push('/')}
-        className="mb-6"
-      >
-        <ArrowLeft className="mr-2 h-4 w-4" />
-        Back to Products
-      </Button>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div className="aspect-square overflow-hidden rounded-lg">
-          <img 
-            src={product.image} 
-            alt={product.name} 
-            className="w-full h-full object-cover"
-          />
+    <div className="min-h-screen bg-white/10 backdrop-blur-md rounded-lg p-6 border border-white/20">
+      <div className="max-w-7xl mx-auto px-4">
+        {/* Breadcrumb */}
+        <div className="mb-8 flex items-center text-sm text-amber-700">
+          <button onClick={() => router.push('/')} className="hover:text-amber-900">Home</button>
+          <span className="mx-2">/</span>
+          <span className="text-amber-800">{product.name}</span>
         </div>
-        
-        <div>
-          <h1 className="text-3xl font-bold">{product.name}</h1>
-          <p className="text-2xl font-medium text-primary mt-2">${product.price.toFixed(2)}</p>
-          
-          <div className="mt-6">
-            <h2 className="text-lg font-semibold mb-2">Description</h2>
-            <p className="text-muted-foreground">{product.description}</p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-16">
+          {/* Product Images */}
+          <div>
+            <div className="bg-gray-900 rounded-lg overflow-hidden mb-4">
+              <img 
+                src={selectedImage} 
+                alt={product.name} 
+                className="w-full h-[500px] object-cover"
+              />
+            </div>
           </div>
-          
-          <div className="mt-6">
-            <h2 className="text-lg font-semibold mb-2">Details</h2>
-            <p className="text-muted-foreground">{product.details}</p>
+
+          {/* Product Info */}
+          <div>
+            <h1 className="text-3xl font-bold text-amber-800 mb-4">{product.name}</h1>
+            
+            <div className="flex items-center mb-6">
+              <div className="flex">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <Star 
+                    key={star} 
+                    className={`h-5 w-5 ${star <= 4 ? 'text-amber-600' : 'text-amber-300'}`} 
+                    fill={star <= 4 ? 'currentColor' : 'none'} 
+                  />
+                ))}
+              </div>
+              <span className="text-amber-700 ml-2">(24 reviews)</span>
+            </div>
+            
+            <div className="text-3xl font-bold text-amber-800 mb-8">${product.price.toFixed(2)}</div>
+            
+            <div className="mb-6">
+              <h3 className="text-amber-800 font-medium mb-3">Description</h3>
+              <p className="text-amber-700">{product.description}</p>
+            </div>
+            
+            {/* Quantity and Add to Cart */}
+            <div className="flex flex-col sm:flex-row gap-4 mb-8">
+              <div className="flex items-center border border-amber-600 rounded-md">
+                <button 
+                  className="px-4 py-2 text-amber-700 hover:text-amber-900"
+                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                >
+                  -
+                </button>
+                <span className="px-4 py-2 text-amber-800">{quantity}</span>
+                <button 
+                  className="px-4 py-2 text-amber-700 hover:text-amber-900"
+                  onClick={() => setQuantity(quantity + 1)}
+                >
+                  +
+                </button>
+              </div>
+              
+              <Button 
+                className="flex-grow bg-gradient-to-r from-amber-600 to-amber-800"
+                size="lg"
+                onClick={handleAddToCart}
+                disabled={isAdding}
+              >
+                <ShoppingCart className="mr-2 h-5 w-5" />
+                Add to Cart
+              </Button>
+              
+              <Button variant="outline" size="icon" className="border-amber-600 text-amber-700 hover:text-amber-900">
+                <Heart className="h-5 w-5" />
+              </Button>
+            </div>
+            
+            {/* Product Features */}
+            <div className="space-y-4 border-t border-amber-600/30 pt-8">
+              <div className="flex items-start gap-3">
+                <Truck className="h-5 w-5 text-amber-600 mt-0.5" />
+                <div>
+                  <h4 className="text-amber-800 font-medium">Free Shipping</h4>
+                  <p className="text-sm text-amber-700">Free standard shipping on orders over $100</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <Shield className="h-5 w-5 text-amber-600 mt-0.5" />
+                <div>
+                  <h4 className="text-amber-800 font-medium">Quality Guarantee</h4>
+                  <p className="text-sm text-amber-700">Premium materials and durable construction</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <RotateCcw className="h-5 w-5 text-amber-600 mt-0.5" />
+                <div>
+                  <h4 className="text-amber-800 font-medium">Easy Returns</h4>
+                  <p className="text-sm text-amber-700">30-day return policy for unworn items</p>
+                </div>
+              </div>
+            </div>
           </div>
-          
-          <Button 
-            className="mt-8 w-full"
-            size="lg"
-            onClick={handleAddToCart}
-            disabled={isAdding}
-          >
-            <ShoppingCart className="mr-2 h-5 w-5" />
-            Add to Cart
-          </Button>
         </div>
       </div>
     </div>
