@@ -17,8 +17,8 @@ model User {
   role          String    @default("user")
   accounts      Account[]
   sessions      Session[]
-  orders        Order[]  
-  messages      Message[] 
+  orders        Order[]
+  messages      Message[]
 }
 
 model Account {
@@ -60,8 +60,9 @@ model Product {
   name        String
   description String
   count       Int      @default(0)
-  price       Decimal  @db.Decimal(10,2)  
+  price       Decimal  @db.Decimal(10, 2)
   materials   Json
+  Image       String
   createdAt   DateTime @default(now())
 }
 
@@ -69,7 +70,7 @@ model Order {
   id        Int      @id @default(autoincrement())
   userId    String?
   items     Json
-  total     Decimal  @db.Decimal(10,2)  
+  total     Decimal  @db.Decimal(10, 2)
   createdAt DateTime @default(now())
   user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
 }
