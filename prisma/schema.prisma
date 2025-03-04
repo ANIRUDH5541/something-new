@@ -62,7 +62,7 @@ model Product {
   count       Int      @default(0)
   price       Decimal  @db.Decimal(10, 2)
   materials   Json
-  Image       String
+  image       String
   createdAt   DateTime @default(now())
 }
 
