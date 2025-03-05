@@ -10,38 +10,16 @@ export default function Navbar() {
   // const pathname = usePathname();
 
   return (
-    <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-sm border-b">
-      <div className="container mx-auto flex items-center justify-between h-16 px-4">
-        <div className="flex-1">
-          <Link href="/" className="text-xl font-semibold text-primary hover:text-primary/80 transition-colors">
-            Something New
-          </Link>
-        </div>
 
-        <div className="flex-1 flex justify-center">
-          <Link
-            href="/"
-            className={`text-lg font-medium  hover:text-primary transition-colors`}
-          >
-            Explore
-          </Link>
-        </div>
 
-            <LoginForm />
-        <div className="flex-1 flex items-center justify-end gap-4">
-
-          <User className="h-5 w-5" />
-          <span className="sr-only">
-          </span>
-
-          <Button variant="ghost" size="icon" asChild>
-            <Link href="/cart">
-              <ShoppingCart className="h-5 w-5" />
-              <span className="sr-only">Cart</span>
-            </Link>
-          </Button>
-        </div>
-      </div>
-    </nav>
+    <header className=' flex p-5 items-center justify-between'>
+      <Link href={"/"} className='flex items-center gap-2'>
+        {/* <Image src={Logo} alt='Logo' className='size-8' /> */}
+        <h4 className='text-2xl font-semibold'>Somethin<span className='text-blue-500'>New</span></h4>
+      </Link>
+      <nav className="hidden md:flex md:justify-end md:space-x-4">
+        <LoginForm />
+      </nav>
+    </header>
   );
 }

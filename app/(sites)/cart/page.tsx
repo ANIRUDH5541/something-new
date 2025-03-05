@@ -6,11 +6,11 @@ import { ArrowLeft, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { CrochetItem } from "@/lib/data";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { CheckCircle2 } from "lucide-react";
-import Image from 'next/image';
 import { DM_Sans } from "next/font/google";
+import { ProductTypes } from "@/app/constants/type";
+import { POST_purchase } from "@/app/lib/action";
 
 const SANSFont = DM_Sans({
   weight: '400',
@@ -18,58 +18,93 @@ const SANSFont = DM_Sans({
   display: 'swap',
 });
 
-type CartItem = CrochetItem & {
-  quantity: number;
-};
+// Define CartItem type with selectedCount instead of quantity
+interface CartItem extends ProductTypes {
+  selectedCount: number; // What the user wants to buy
+}
 
 export default function CartPage() {
   const router = useRouter();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
-  
+  const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
     const storedItems = localStorage.getItem('cartItems');
     if (storedItems) {
-      setCartItems(JSON.parse(storedItems));
+      const parsedItems: ProductTypes[] = JSON.parse(storedItems);
+      const itemsWithCount = parsedItems.map(item => ({
+        ...item,
+        selectedCount: item.count || 1
+      }));
+      setCartItems(itemsWithCount);
     }
     setIsLoaded(true);
   }, []);
-  
+
   const updateCart = (updatedItems: CartItem[]) => {
     setCartItems(updatedItems);
     localStorage.setItem('cartItems', JSON.stringify(updatedItems));
   };
-  
-  const removeItem = (id: string) => {
+
+  const removeItem = (id: number) => {
     const updatedItems = cartItems.filter(item => item.id !== id);
     updateCart(updatedItems);
   };
-  
-  const updateQuantity = (id: string, newQuantity: number) => {
-    if (newQuantity < 1) return;
-    const updatedItems = cartItems.map(item => 
-      item.id === id ? { ...item, quantity: newQuantity } : item
-    );
+
+  const updateSelectedCount = (id: number, newCount: number) => {
+    if (newCount < 1) return;
+    const updatedItems = cartItems.map(item => {
+      if (item.id === id) {
+        if (newCount > item.count) {
+          setError(`Only ${item.count} ${item.name} available in stock`);
+          return { ...item, selectedCount: item.count };
+        }
+        return { ...item, selectedCount: newCount };
+      }
+      return item;
+    });
     updateCart(updatedItems);
+    setError(null);
   };
+
+  const handleCheckout = async () => {
+    try {
+      const response = await fetch('/api/cart', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ items: cartItems }),
+      });
   
-  const handleCheckout = () => {
-    setShowSuccessDialog(true);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message);
+      }
+  
+      const result = await response.json();
+      setShowSuccessDialog(true);
+      
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred during checkout');
+    }
   };
-  
+
   const completeOrder = () => {
     localStorage.removeItem('cartItems');
     setCartItems([]);
     setShowSuccessDialog(false);
+    setError(null);
     router.push('/');
   };
-  
+
   const subtotal = cartItems.reduce(
-    (sum, item) => sum + item.price * item.quantity, 
+    (sum, item) => sum + item.price * item.selectedCount,
     0
   );
-  
+
   if (!isLoaded) {
     return (
       <div className="container mx-auto pt-24 px-4 min-h-screen flex items-center justify-center">
@@ -77,7 +112,7 @@ export default function CartPage() {
       </div>
     );
   }
-  
+
   return (
     <div className="container mx-auto pt-24 px-4 min-h-screen bg-gradient-to-b from-amber-50 to-amber-100/50">
       <Button 
@@ -92,17 +127,22 @@ export default function CartPage() {
       <h1 className={`${SANSFont.className} text-4xl font-bold mb-8 text-center text-amber-900`}>
         Your Shopping Cart
       </h1>
+
+      {error && (
+        <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-lg">
+          {error}
+        </div>
+      )}
       
       {cartItems.length === 0 ? (
-  <div className="text-center py-12 bg-white rounded-lg shadow-sm p-8">
-    <div className="w-48 h-48 mx-auto mb-6 relative">
-      <img
-        src="/img/cart.png"
-        alt="Empty Cart"
-        className="object-contain"
-   
-      />
-    </div>
+        <div className="text-center py-12 bg-white rounded-lg shadow-sm p-8">
+          <div className="w-48 h-48 mx-auto mb-6 relative">
+            <img
+              src="/img/cart.png"
+              alt="Empty Cart"
+              className="object-contain"
+            />
+          </div>
           <p className={`${SANSFont.className} text-xl text-amber-700 mb-6`}>
             Your cart is empty
           </p>
@@ -116,71 +156,70 @@ export default function CartPage() {
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
-          {cartItems.map((item) => (
-  <Card key={item.id} className="mb-4 hover:shadow-md transition-shadow">
-    <CardContent className="p-4">
-      <div className="flex gap-4">
-        {/* Product Image */}
-        <div className="relative w-24 h-24 flex-shrink-0">
-          <img
-            src={item.image}
-            alt={item.name}
-            className="object-cover rounded-md"
-            sizes="(max-width: 96px) 100vw, 96px"
-          />
-        </div>
+            {cartItems.map((item) => (
+              <Card key={item.id} className="mb-4 hover:shadow-md transition-shadow">
+                <CardContent className="p-4">
+                  <div className="flex gap-4">
+                    <div className="relative w-24 h-24 flex-shrink-0">
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className="object-cover rounded-md"
+                        sizes="(max-width: 96px) 100vw, 96px"
+                      />
+                    </div>
 
-        {/* Product Details */}
-        <div className="flex-grow">
-          <div className="flex justify-between items-start">
-            <div>
-              <h3 className={`${SANSFont.className} text-lg font-medium text-amber-900`}>
-                {item.name}
-              </h3>
-              <p className="text-amber-700 text-sm mb-2">${item.price.toFixed(2)}</p>
-            </div>
-            <Button 
-              variant="ghost" 
-              size="icon"
-              onClick={() => removeItem(item.id)}
-              className="hover:text-amber-600 transition-colors"
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          </div>
+                    <div className="flex-grow">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h3 className={`${SANSFont.className} text-lg font-medium text-amber-900`}>
+                            {item.name}
+                          </h3>
+                          <p className="text-amber-700 text-sm mb-2">${item.price.toFixed(2)}</p>
+                          <p className="text-amber-600 text-sm">Available: {item.count}</p>
+                        </div>
+                        <Button 
+                          variant="ghost" 
+                          size="icon"
+                          onClick={() => removeItem(item.id)}
+                          className="hover:text-amber-600 transition-colors"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
 
-          {/* Quantity Controls */}
-          <div className="flex items-center mt-2">
-            <Button 
-              variant="outline" 
-              size="icon"
-              onClick={() => updateQuantity(item.id, item.quantity - 1)}
-              className="h-8 w-8 hover:bg-amber-100 transition-colors text-amber-800"
-              disabled={item.quantity <= 1}
-            >
-              -
-            </Button>
-            <span className="mx-3 w-8 text-center text-amber-900">{item.quantity}</span>
-            <Button 
-              variant="outline" 
-              size="icon"
-              onClick={() => updateQuantity(item.id, item.quantity + 1)}
-              className="h-8 w-8 hover:bg-amber-100 transition-colors text-amber-800"
-            >
-              +
-            </Button>
-            <div className="ml-auto text-right">
-              <span className="text-sm text-amber-700">Total:</span>
-              <p className="text-amber-900 font-medium">
-                ${(item.price * item.quantity).toFixed(2)}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </CardContent>
-  </Card>
-))}
+                      <div className="flex items-center mt-2">
+                        <Button 
+                          variant="outline" 
+                          size="icon"
+                          onClick={() => updateSelectedCount(item.id, item.selectedCount - 1)}
+                          className="h-8 w-8 hover:bg-amber-100 transition-colors text-amber-800"
+                          disabled={item.selectedCount <= 1}
+                        >
+                          -
+                        </Button>
+                        <span className="mx-3 w-8 text-center text-amber-900">{item.selectedCount}</span>
+                        <Button 
+                          variant="outline" 
+                          size="icon"
+                          onClick={() => updateSelectedCount(item.id, item.selectedCount + 1)}
+                          className="h-8 w-8 hover:bg-amber-100 transition-colors text-amber-800"
+                          disabled={item.selectedCount >= item.count}
+                        >
+                          +
+                        </Button>
+                        <div className="ml-auto text-right">
+                          <span className="text-sm text-amber-700">Total:</span>
+                          <p className="text-amber-900 font-medium">
+                            ${(item.price * item.selectedCount).toFixed(2)}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
           
           <div>

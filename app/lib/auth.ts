@@ -17,9 +17,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   callbacks: {
-    // Sign-in callback: Assign role and store in DB
     async signIn({ user, account, profile }) {
-      if (user.email === "anushanaikar04@gmail.com") {
+      if (user.email === "22eg110c10@anurag.edu.in") {
         await prisma.user.upsert({
           where: { email: user.email },
           update: { role: "admin" },
@@ -44,15 +43,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       }
       return true;
     },
-    // JWT callback: Add role to the token
     async jwt({ token, user }) {
-      // `user` is available during initial sign-in
       if (user) {
-        token.role = user.role as string; // Add role to the token
+        token.role = user.role as string;
       }
       return token;
     },
-    // Session callback: Add role from token to session
     async session({ session, token }) {
       if (token?.role) {
         session.user.role = token.role as string; // Assign role from token to session

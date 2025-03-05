@@ -3,8 +3,9 @@
 import Link from "next/link";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { useProducts } from "../lib/context";
+import { ProductTypes } from "../constants/type";
 
-export default function ProductCard({ item }: { item: any }) {
+export default function ProductCard({ item }: { item: ProductTypes }) {
   const { setSelectedProduct } = useProducts();
 
   return (

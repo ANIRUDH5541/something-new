@@ -3,12 +3,13 @@ import { requireUser } from "./hooks";
 import prisma from "./db";
 import nodemailer from "nodemailer";
 import { Decimal, JsonValue } from "@prisma/client/runtime/library";
+import { ProductTypes } from "../constants/type";
 
 const emailTransporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: process.env.ADMIN_EMAIL,
-    pass: process.env.EMAIL_PASSWORD,
+    user: process.env.ADMIN_EMAIL as string,
+    pass: process.env.EMAIL_PASSWORD as string,
   },
 });
 
@@ -64,38 +65,60 @@ export async function Products() {
   }
 }
 
-export async function POST_purchase(req: NextRequest) {
+interface OrderItem {
+  id: number;
+  name: string;
+  description: string;
+  price: Decimal;
+  materials: string[];
+  quantity: number;
+  subtotal: Decimal;
+}
+
+export async function POST_purchase(items: ProductTypes[]) {
   const user = await getAuthenticatedUser();
   if (!user) {
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    throw new Error("Unauthorized");
   }
 
   try {
-    const { items } = await req.json();
     if (!items || !Array.isArray(items) || items.length === 0) {
       throw new Error("Invalid items array");
     }
 
+    // Fetch products from database
+    const productIds = items.map((i) => i.id);
     const products = await prisma.product.findMany({
-      where: { id: { in: items.map((i) => i.id) } },
+      where: { id: { in: productIds } },
     });
 
-    const orderItems = items.map((item) => {
-      const product = products.find((p) => p.id === parseInt(item.id));
-      if (!product) throw new Error(`Product ${item.id} not found`);
-      if (product.count < item.quantity) {
+    // Transform and validate items
+    const orderItems: OrderItem[] = items.map((item) => {
+      const product = products.find((p) => p.id === item.id);
+      if (!product) {
+        throw new Error(`Product ${item.id} not found`);
+      }
+      if (product.count < item.count) {
         throw new Error(`Insufficient stock for ${product.name}`);
       }
+
+      // Handle materials
+      const materials = item.materials
+        ? [item.materials.material]
+        : Array.isArray(product.materials)
+          ? product.materials
+          : product.materials
+            ? JSON.parse(product.materials as string)
+            : [];
+
       return {
         id: product.id,
         name: product.name,
         description: product.description,
-        price: new Decimal(product.price), // Ensure Decimal type
-        materials: Array.isArray(product.materials)
-          ? product.materials
-          : JSON.parse(product.materials as string),
-        quantity: item.quantity,
-        subtotal: new Decimal(product.price).mul(item.quantity),
+        price: new Decimal(product.price),
+        materials,
+        quantity: item.count,
+        subtotal: new Decimal(product.price).mul(item.count),
       };
     });
 
@@ -106,10 +129,11 @@ export async function POST_purchase(req: NextRequest) {
         data: {
           userId: user.id,
           items: JSON.stringify(orderItems),
-          total: total,
+          total: total.toNumber(), // Convert to number for Prisma
         },
       });
 
+      // Update stock
       for (const item of orderItems) {
         await tx.product.update({
           where: { id: item.id },
@@ -117,50 +141,51 @@ export async function POST_purchase(req: NextRequest) {
         });
       }
 
+      // Send email notification
       const mailOptions = {
-        from: process.env.ADMIN_EMAIL,
-        to: process.env.ADMIN_EMAIL,
+        from: process.env.ADMIN_EMAIL as string,
+        to: process.env.ADMIN_EMAIL as string,
         subject: `New Order from ${user.email}`,
         html: `
-            <h2>New Order Details (#${order.id})</h2>
-            <p>User: ${user.name} (${user.email})</p>
-            <h3>Items:</h3>
-            <ul>
-              ${orderItems
+          <h2>New Order Details (#${order.id})</h2>
+          <p>User: ${user.name} (${user.email})</p>
+          <h3>Items:</h3>
+          <ul>
+            ${orderItems
             .map(
               (item) => `
-                <li>
-                  ${item.name} - $${item.price} x ${item.quantity} = $${item.subtotal}<br>
-                  Description: ${item.description}<br>
-                  Materials: ${item.materials.join(", ")}
-                </li>
-              `
+                  <li>
+                    ${item.name} - $${item.price.toNumber()} x ${item.quantity} = $${item.subtotal.toNumber()}<br>
+                    Description: ${item.description}<br>
+                    Materials: ${item.materials.join(", ")}
+                  </li>
+                `
             )
             .join("")}
-            </ul>
-            <p>Total: $${total}</p>
-          `,
+          </ul>
+          <p>Total: $${total.toNumber()}</p>
+        `,
       };
 
       await emailTransporter.sendMail(mailOptions);
-      return order; // Return order object
+      return order;
     });
 
-    return NextResponse.json({
+
+    return {
       message: "Purchase completed successfully",
       order: {
         id: newOrder.id,
         items: orderItems,
-        total,
+        total: total.toNumber(),
         user: { email: user.email, name: user.name },
       },
-    });
+    };
   } catch (error: any) {
     console.error("Error processing purchase:", error);
-    return NextResponse.json({ message: error.message }, { status: 500 });
+    throw error; // Throw the error to be handled by the caller
   }
 }
-
 
 export async function GET_orders(req: NextRequest) {
   const user = await getAuthenticatedUser();

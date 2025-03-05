@@ -1,18 +1,15 @@
-"use client";
-
+import React, { useState } from 'react';
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { ArrowLeft, ShoppingCart, Star, Truck, Shield, RotateCcw, Heart } from "lucide-react";
+import { ArrowLeft, ShoppingCart, Star, Truck, Shield, RotateCcw, Heart, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import { CrochetItem } from "@/lib/data";
 import { ProductTypes } from "@/app/constants/type";
 
 interface ProductClientProps {
   product: ProductTypes;
 }
 
-export default function ProductClient({ product }: ProductClientProps) {
+export default function EnhancedProductClient({ product }: ProductClientProps) {
   const router = useRouter();
   const { toast } = useToast();
   const [isAdding, setIsAdding] = useState(false);
@@ -41,6 +38,7 @@ export default function ProductClient({ product }: ProductClientProps) {
     toast({
       title: "Added to cart",
       description: `${product.name} has been added to your cart.`,
+      className: "bg-green-50 border-green-200 text-green-800"
     });
     
     setTimeout(() => {
@@ -49,104 +47,137 @@ export default function ProductClient({ product }: ProductClientProps) {
   };
 
   return (
-    <div className="min-h-screen bg-white/10 backdrop-blur-md rounded-lg p-6 border border-white/20">
-      <div className="max-w-7xl mx-auto px-4">
-        {/* Breadcrumb */}
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-white">
+      <div className="max-w-7xl mx-auto px-4 py-12">
         <div className="mb-8 flex items-center text-sm text-amber-700">
-          <button onClick={() => router.push('/')} className="hover:text-amber-900">Home</button>
-          <span className="mx-2">/</span>
-          <span className="text-amber-800">{product.name}</span>
+          <button 
+            onClick={() => router.push('/')} 
+            className="flex items-center hover:text-amber-900 transition-colors"
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Home
+          </button>
+          <ChevronRight className="mx-2 h-4 w-4 text-amber-500" />
+          <span className="text-amber-800 font-semibold">{product.name}</span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-16">
-          {/* Product Images */}
-          <div>
-            <div className="bg-gray-900 rounded-lg overflow-hidden mb-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 overflow-hidden">
+          <div className="relative">
+            <div className="bg-amber-100 overflow-hidden">
               <img 
                 src={selectedImage} 
                 alt={product.name} 
-                className="w-full h-[500px] object-cover"
+                className="w-full h-[600px] object-cover transform transition-transform hover:scale-105"
               />
             </div>
           </div>
 
-          {/* Product Info */}
-          <div>
-            <h1 className="text-3xl font-bold text-amber-800 mb-4">{product.name}</h1>
+          <div className="px-8 pb-6">
+            <h1 className="text-4xl font-bold text-amber-900 mb-4 leading-tight">
+              {product.name}
+            </h1>
             
+            {/* Rating */}
             <div className="flex items-center mb-6">
               <div className="flex">
                 {[1, 2, 3, 4, 5].map((star) => (
                   <Star 
                     key={star} 
-                    className={`h-5 w-5 ${star <= 4 ? 'text-amber-600' : 'text-amber-300'}`} 
+                    className={`h-6 w-6 ${star <= 4 ? 'text-amber-500' : 'text-amber-200'}`} 
                     fill={star <= 4 ? 'currentColor' : 'none'} 
                   />
                 ))}
               </div>
-              <span className="text-amber-700 ml-2">(24 reviews)</span>
+              <span className="text-amber-700 ml-3 text-sm">(24 reviews)</span>
             </div>
             
-            <div className="text-3xl font-bold text-amber-800 mb-8">${product.price.toFixed(2)}</div>
-            
+            {/* Price */}
+            <div className="text-4xl font-extrabold text-amber-800 mb-6">
+              ${product.price.toFixed(2)}
+              <span className="text-sm text-amber-600 ml-2 line-through">
+                {(product.price * 1.2).toFixed(2)}
+              </span>
+            </div>
+
+            {/* Description */}
             <div className="mb-6">
-              <h3 className="text-amber-800 font-medium mb-3">Description</h3>
-              <p className="text-amber-700">{product.description}</p>
+              <h3 className="text-amber-900 font-semibold mb-3">Description</h3>
+              <p className="text-amber-700 leading-relaxed">{product.description}</p>
             </div>
-            
-            {/* Quantity and Add to Cart */}
-            <div className="flex flex-col sm:flex-row gap-4 mb-8">
-              <div className="flex items-center border border-amber-600 rounded-md">
-                <button 
-                  className="px-4 py-2 text-amber-700 hover:text-amber-900"
-                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                >
-                  -
-                </button>
-                <span className="px-4 py-2 text-amber-800">{quantity}</span>
-                <button 
-                  className="px-4 py-2 text-amber-700 hover:text-amber-900"
-                  onClick={() => setQuantity(quantity + 1)}
-                >
-                  +
-                </button>
+
+            {/* Materials */}
+            {product.materials && (
+              <div className="mb-6">
+                <h3 className="text-amber-900 font-semibold mb-3">Materials</h3>
+                <p className="text-amber-700">{product.materials.material}</p>
               </div>
-              
-              <Button 
-                className="flex-grow bg-gradient-to-r from-amber-600 to-amber-800"
-                size="lg"
-                onClick={handleAddToCart}
-                disabled={isAdding}
-              >
-                <ShoppingCart className="mr-2 h-5 w-5" />
-                Add to Cart
-              </Button>
-              
-              <Button variant="outline" size="icon" className="border-amber-600 text-amber-700 hover:text-amber-900">
-                <Heart className="h-5 w-5" />
-              </Button>
+            )}
+            
+            {/* Quantity and Cart Actions */}
+            <div className="space-y-6">
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center border-2 border-amber-600 rounded-full overflow-hidden">
+                  <button 
+                    className="px-4 py-2 bg-amber-100 text-amber-800 hover:bg-amber-200 transition-colors"
+                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  >
+                    -
+                  </button>
+                  <span className="px-4 py-2 text-amber-900 font-bold">{quantity}</span>
+                  <button 
+                    className="px-4 py-2 bg-amber-100 text-amber-800 hover:bg-amber-200 transition-colors"
+                    onClick={() => setQuantity(quantity + 1)}
+                  >
+                    +
+                  </button>
+                </div>
+                
+                <Button 
+                  className="flex-grow bg-gradient-to-r from-amber-600 to-amber-800 hover:from-amber-700 hover:to-amber-900 transition-all"
+                  size="lg"
+                  onClick={handleAddToCart}
+                  disabled={isAdding}
+                >
+                  <ShoppingCart className="mr-2 h-5 w-5" />
+                  Add to Cart
+                </Button>
+                
+                <Button 
+                  variant="outline" 
+                  size="icon" 
+                  className="border-2 border-amber-600 text-amber-700 hover:bg-amber-100 hover:text-amber-900 transition-colors"
+                >
+                  <Heart className="h-5 w-5" />
+                </Button>
+              </div>
             </div>
             
             {/* Product Features */}
-            <div className="space-y-4 border-t border-amber-600/30 pt-8">
-              <div className="flex items-start gap-3">
-                <Truck className="h-5 w-5 text-amber-600 mt-0.5" />
+            <div className="border-t border-amber-200 pt-6 mt-6 space-y-4">
+              <div className="flex items-center gap-4 group">
+                <Truck className="h-6 w-6 text-amber-600 group-hover:text-amber-800 transition-colors" />
                 <div>
-                  <h4 className="text-amber-800 font-medium">Free Shipping</h4>
+                  <h4 className="text-amber-900 font-semibold group-hover:text-amber-700 transition-colors">
+                    Free Shipping
+                  </h4>
                   <p className="text-sm text-amber-700">Free standard shipping on orders over $100</p>
                 </div>
               </div>
-              <div className="flex items-start gap-3">
-                <Shield className="h-5 w-5 text-amber-600 mt-0.5" />
+              <div className="flex items-center gap-4 group">
+                <Shield className="h-6 w-6 text-amber-600 group-hover:text-amber-800 transition-colors" />
                 <div>
-                  <h4 className="text-amber-800 font-medium">Quality Guarantee</h4>
+                  <h4 className="text-amber-900 font-semibold group-hover:text-amber-700 transition-colors">
+                    Quality Guarantee
+                  </h4>
                   <p className="text-sm text-amber-700">Premium materials and durable construction</p>
                 </div>
               </div>
-              <div className="flex items-start gap-3">
-                <RotateCcw className="h-5 w-5 text-amber-600 mt-0.5" />
+              <div className="flex items-center gap-4 group">
+                <RotateCcw className="h-6 w-6 text-amber-600 group-hover:text-amber-800 transition-colors" />
                 <div>
-                  <h4 className="text-amber-800 font-medium">Easy Returns</h4>
+                  <h4 className="text-amber-900 font-semibold group-hover:text-amber-700 transition-colors">
+                    Easy Returns
+                  </h4>
                   <p className="text-sm text-amber-700">30-day return policy for unworn items</p>
                 </div>
               </div>

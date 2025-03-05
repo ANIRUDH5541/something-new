@@ -8,6 +8,10 @@
   --background-end-rgb: 255, 255, 255;
 }
 
+:where(body, html)::-webkit-scrollbar {
+  width: 0px;
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --foreground-rgb: 255, 255, 255;
@@ -44,6 +48,7 @@
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
   }
+
   .dark {
     --background: 20 40% 10%;
     --foreground: 30 25% 90%;
@@ -76,6 +81,7 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }

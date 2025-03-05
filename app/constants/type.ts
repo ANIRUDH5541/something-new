@@ -4,6 +4,6 @@ export interface ProductTypes{
   name:string;
   description:string;
   count:number;
-  materials : Record<string , string>;
+  materials : {material :string } | null;
   image:string
 }
