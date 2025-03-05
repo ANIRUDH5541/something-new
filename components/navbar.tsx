@@ -1,25 +1,23 @@
 
-import Link from "next/link";
-import { ShoppingCart, User } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import LoginForm from "@/app/components/LoginForm";
-// import { usePathname } from "next/navigation";
-// import LoginForm from "@/app/components/LoginForm";
+import Link from "next/link";
 
 export default function Navbar() {
-  // const pathname = usePathname();
 
   return (
-
-
-    <header className=' flex p-5 items-center justify-between'>
-      <Link href={"/"} className='flex items-center gap-2'>
-        {/* <Image src={Logo} alt='Logo' className='size-8' /> */}
-        <h4 className='text-2xl font-semibold'>Somethin<span className='text-blue-500'>New</span></h4>
+    <nav className="w-full max-w-6xl flex flex-col mx-auto sm:flex-row justify-between z-50 items-center mb-8">
+      <Link href={"/"} className="flex items-center space-x-2 mb-2 sm:mb-0">
+        <span className="text-2xl font-bold text-amber-800">Crochet</span>
       </Link>
-      <nav className="hidden md:flex md:justify-end md:space-x-4">
+      <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-6">
+      <Link href="/" className="text-amber-700 hover:text-amber-900 font-medium transition-colors capitalize">Home</Link>
+        <Link href="/marketplace" className="text-amber-700 hover:text-amber-900 font-medium transition-colors capitalize">marketplace</Link>
+        <Link href="/cart" className="text-amber-700 hover:text-amber-900 font-medium transition-colors capitalize">cart</Link>
+        <Link href="/contact" className="text-amber-700 hover:text-amber-900 font-medium transition-colors capitalize">contact</Link>
+      </div>
+      <div className="flex space-x-4">
         <LoginForm />
-      </nav>
-    </header>
+      </div>
+    </nav>
   );
 }

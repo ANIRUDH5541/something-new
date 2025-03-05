@@ -24,10 +24,10 @@ const SubmitButton: React.FC<SubmitButtonProps> = ({ logo, text, variant, type, 
                     <Loader2 className="size-4 mr-2 animate-spin" /> Please wait
                 </Button>
             ) : ( */}
-                <Button className={cn("w-full",className)} type={type || "submit"} variant={variant || "outline"}>
-                    {logo && <Image src={logo} alt={`logo`} className="size-4 mr-2" />}
-                    {text}
-                </Button>
+            <Button className={cn("w-full flex justify-center", className)} type={type || "submit"} variant={variant || "outline"}>
+                {logo && <Image src={logo} alt={`logo`} className="h-4 w-4 mr-2" />}
+                {text}
+            </Button>
             {/* )} */}
         </>
     );

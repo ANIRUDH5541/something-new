@@ -10,7 +10,9 @@ const LoginForm = () => {
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button>Get Started</Button>
+                <Button
+                className='bg-gradient-to-r from-amber-500 to-amber-700 hover:from-amber-600 hover:to-amber-800 transition-all duration-300'
+                >Register</Button>
             </DialogTrigger>
             <DialogContent className='sm:max-w-[360px]'>
                 <DialogHeader className='flex flex-row gap-2 justify-center items-center'>

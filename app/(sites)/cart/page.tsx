@@ -18,9 +18,8 @@ const SANSFont = DM_Sans({
   display: 'swap',
 });
 
-// Define CartItem type with selectedCount instead of quantity
 interface CartItem extends ProductTypes {
-  selectedCount: number; // What the user wants to buy
+  selectedCount: number; 
 }
 
 export default function CartPage() {
@@ -114,17 +113,8 @@ export default function CartPage() {
   }
 
   return (
-    <div className="container mx-auto pt-24 px-4 min-h-screen bg-gradient-to-b from-amber-50 to-amber-100/50">
-      <Button 
-        variant="ghost" 
-        onClick={() => router.push('/')}
-        className="mb-6 hover:bg-amber-100 transition-colors text-amber-800"
-      >
-        <ArrowLeft className="mr-2 h-4 w-4" />
-        Continue Shopping
-      </Button>
-      
-      <h1 className={`${SANSFont.className} text-4xl font-bold mb-8 text-center text-amber-900`}>
+    <section className="w-full">      
+      <h1 className={`${SANSFont.className} text-4xl font-bold mb-8 mt-20 text-center text-amber-900`}>
         Your Shopping Cart
       </h1>
 
@@ -135,7 +125,7 @@ export default function CartPage() {
       )}
       
       {cartItems.length === 0 ? (
-        <div className="text-center py-12 bg-white rounded-lg shadow-sm p-8">
+        <div className="text-center">
           <div className="w-48 h-48 mx-auto mb-6 relative">
             <img
               src="/img/cart.png"
@@ -147,7 +137,7 @@ export default function CartPage() {
             Your cart is empty
           </p>
           <Button 
-            onClick={() => router.push('/')}
+            onClick={() => router.push('/marketplace')}
             className="bg-gradient-to-r from-amber-500 to-amber-700 hover:from-amber-600 hover:to-amber-800 transition-all duration-300"
           >
             Browse Products
@@ -160,11 +150,11 @@ export default function CartPage() {
               <Card key={item.id} className="mb-4 hover:shadow-md transition-shadow">
                 <CardContent className="p-4">
                   <div className="flex gap-4">
-                    <div className="relative w-24 h-24 flex-shrink-0">
+                    <div className="relative w-36 ">
                       <img
                         src={item.image}
                         alt={item.name}
-                        className="object-cover rounded-md"
+                        className="object-cover rounded-md h-full"
                         sizes="(max-width: 96px) 100vw, 96px"
                       />
                     </div>
@@ -286,6 +276,6 @@ export default function CartPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </section>
   );
 }

@@ -28,8 +28,11 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <ProductProvider>
-            <div className="min-h-screen bg-background">
-              <Navbar />
+            <div
+              className="bg-gradient-to-br from-pink-100 via-purple-100 to-blue-100 min-h-screen  px-4 py-12 overflow-hidden"
+
+            >
+              <Navbar/>
               <main>{children}</main>
             </div>
             <Toaster />

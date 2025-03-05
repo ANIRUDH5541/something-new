@@ -56,7 +56,7 @@ const ProductFilter = () => {
     <div className="bg-white/10 backdrop-blur-md rounded-lg p-6 border border-white/20 sticky top-32 ">
       <div className="flex items-center mb-6">
         <Filter className="h-5 w-5 mr-2 text-rose-400" />
-        <h3 className="text-xl font-semibold text-white">Filters</h3>
+        <h3 className="text-xl font-semibold ">Filters</h3>
       </div>
 
       {/* Price Filter */}
@@ -65,11 +65,11 @@ const ProductFilter = () => {
           className="flex items-center justify-between w-full text-left mb-4"
           onClick={() => toggleSection('price')}
         >
-          <span className="font-medium text-white">Price Range</span>
+          <span className="font-medium ">Price Range</span>
           {expandedSections.price ? (
-            <ChevronUp className="h-4 w-4 text-white/60" />
+            <ChevronUp className="h-4 w-4 /60" />
           ) : (
-            <ChevronDown className="h-4 w-4 text-white/60" />
+            <ChevronDown className="h-4 w-4 /60" />
           )}
         </button>
         
@@ -84,7 +84,7 @@ const ProductFilter = () => {
                   checked={filters.price === range}
                   onChange={() => handlePriceChange(range)}
                 />
-                <span className="ml-2 text-white/80">
+                <span className="ml-2 /80">
                   {range === 'under50' && 'Under $50'}
                   {range === '50to100' && '$50 - $100'}
                   {range === '100to200' && '$100 - $200'}
@@ -96,17 +96,16 @@ const ProductFilter = () => {
         )}
       </div>
 
-      {/* Availability Filter */}
       <div className="mb-6">
         <button 
           className="flex items-center justify-between w-full text-left mb-4"
           onClick={() => toggleSection('availability')}
         >
-          <span className="font-medium text-white">Availability</span>
+          <span className="font-medium ">Availability</span>
           {expandedSections.availability ? (
-            <ChevronUp className="h-4 w-4 text-white/60" />
+            <ChevronUp className="h-4 w-4 /60" />
           ) : (
-            <ChevronDown className="h-4 w-4 text-white/60" />
+            <ChevronDown className="h-4 w-4 /60" />
           )}
         </button>
         
@@ -118,13 +117,13 @@ const ProductFilter = () => {
               checked={filters.availability}
               onChange={handleAvailabilityChange}
             />
-            <span className="ml-2 text-white/80">In Stock Only</span>
+            <span className="ml-2 /80">In Stock Only</span>
           </label>
         )}
       </div>
 
       <button 
-        className="w-full bg-gradient-to-r from-rose-400 to-pink-600 text-white py-2 rounded-md font-medium hover:opacity-90 transition-opacity"
+        className="w-full bg-gradient-to-r text-white from-rose-400 to-pink-600  py-2 rounded-md font-medium hover:opacity-90 transition-opacity"
         onClick={() => {
           setFilters({
             price: '',

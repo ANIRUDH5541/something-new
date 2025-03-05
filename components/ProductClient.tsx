@@ -47,7 +47,7 @@ export default function EnhancedProductClient({ product }: ProductClientProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-white">
+    <div className="">
       <div className="max-w-7xl mx-auto px-4 py-12">
         <div className="mb-8 flex items-center text-sm text-amber-700">
           <button 
@@ -77,7 +77,6 @@ export default function EnhancedProductClient({ product }: ProductClientProps) {
               {product.name}
             </h1>
             
-            {/* Rating */}
             <div className="flex items-center mb-6">
               <div className="flex">
                 {[1, 2, 3, 4, 5].map((star) => (
@@ -91,7 +90,6 @@ export default function EnhancedProductClient({ product }: ProductClientProps) {
               <span className="text-amber-700 ml-3 text-sm">(24 reviews)</span>
             </div>
             
-            {/* Price */}
             <div className="text-4xl font-extrabold text-amber-800 mb-6">
               ${product.price.toFixed(2)}
               <span className="text-sm text-amber-600 ml-2 line-through">
@@ -99,13 +97,11 @@ export default function EnhancedProductClient({ product }: ProductClientProps) {
               </span>
             </div>
 
-            {/* Description */}
             <div className="mb-6">
               <h3 className="text-amber-900 font-semibold mb-3">Description</h3>
               <p className="text-amber-700 leading-relaxed">{product.description}</p>
             </div>
 
-            {/* Materials */}
             {product.materials && (
               <div className="mb-6">
                 <h3 className="text-amber-900 font-semibold mb-3">Materials</h3>
@@ -113,19 +109,18 @@ export default function EnhancedProductClient({ product }: ProductClientProps) {
               </div>
             )}
             
-            {/* Quantity and Cart Actions */}
             <div className="space-y-6">
               <div className="flex items-center space-x-4">
                 <div className="flex items-center border-2 border-amber-600 rounded-full overflow-hidden">
                   <button 
-                    className="px-4 py-2 bg-amber-100 text-amber-800 hover:bg-amber-200 transition-colors"
+                    className="px-4 py-2"
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
                   >
                     -
                   </button>
                   <span className="px-4 py-2 text-amber-900 font-bold">{quantity}</span>
                   <button 
-                    className="px-4 py-2 bg-amber-100 text-amber-800 hover:bg-amber-200 transition-colors"
+                    className="px-4 py-2"
                     onClick={() => setQuantity(quantity + 1)}
                   >
                     +
