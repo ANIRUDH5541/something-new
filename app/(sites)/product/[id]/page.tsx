@@ -1,17 +1,21 @@
+'use client';
+
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { crochetItems } from "@/lib/data";
 import ProductClient from "@/components/ProductClient";
+import { useParams } from "next/navigation";
+import { useProducts } from "@/app/lib/context";
 
-export function generateStaticParams() {
-  return crochetItems.map((item) => ({
-    id: item.id,
-  }));
-}
+export default function ProductPage() {
+  const { id } = useParams();
+  const { products, selectedProduct } = useProducts();
 
-export default function ProductPage({ params }: { params: { id: string } }) {
-  const product = crochetItems.find(item => item.id === params.id);
-  
+  let product = selectedProduct;
+
+  if (!product) {
+    product = products.find((item) => item.id === Number(id)) || null; 
+  }
+
   if (!product) {
     return (
       <div className="container mx-auto pt-24 px-4 min-h-screen flex flex-col items-center justify-center">

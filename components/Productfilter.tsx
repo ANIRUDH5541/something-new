@@ -1,11 +1,12 @@
+'use client'
 import React, { useState } from 'react';
 import { Filter, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface FilterProps {
-  onFilterChange: (filters: any) => void;
+  onFilterChange: (filters: { price: string; sizes: string[]; availability: boolean }) => void;
 }
 
-const ProductFilter: React.FC<FilterProps> = ({ onFilterChange }) => {
+const ProductFilter = () => {
   const [filters, setFilters] = useState<{
     price: string;
     sizes: string[];
@@ -32,7 +33,7 @@ const ProductFilter: React.FC<FilterProps> = ({ onFilterChange }) => {
   const handlePriceChange = (range: string) => {
     const newFilters = { ...filters, price: range };
     setFilters(newFilters);
-    onFilterChange(newFilters);
+    // onFilterChange(newFilters);
   };
 
   const handleSizeChange = (size: string) => {
@@ -42,13 +43,13 @@ const ProductFilter: React.FC<FilterProps> = ({ onFilterChange }) => {
     
     const newFilters = { ...filters, sizes: newSizes };
     setFilters(newFilters);
-    onFilterChange(newFilters);
+    // onFilterChange(newFilters);
   };
 
   const handleAvailabilityChange = () => {
     const newFilters = { ...filters, availability: !filters.availability };
     setFilters(newFilters);
-    onFilterChange(newFilters);
+    // onFilterChange(newFilters);
   };
 
   return (
@@ -130,11 +131,11 @@ const ProductFilter: React.FC<FilterProps> = ({ onFilterChange }) => {
             sizes: [],
             availability: false,
           });
-          onFilterChange({
-            price: '',
-            sizes: [],
-            availability: false,
-          });
+          // onFilterChange({
+          //   price: '',
+          //   sizes: [],
+          //   availability: false,
+          // });
         }}
       >
         Reset Filters

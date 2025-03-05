@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { ShoppingCart, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import LoginForm from "@/app/components/LoginForm";
 // import { usePathname } from "next/navigation";
 // import LoginForm from "@/app/components/LoginForm";
 
@@ -26,12 +27,12 @@ export default function Navbar() {
           </Link>
         </div>
 
+            <LoginForm />
         <div className="flex-1 flex items-center justify-end gap-4">
 
-            {/* <User className="h-5 w-5" /> */}
-            {/* <span className="sr-only"> */}
-              {/* <LoginForm /> */}
-            {/* </span> */}
+          <User className="h-5 w-5" />
+          <span className="sr-only">
+          </span>
 
           <Button variant="ghost" size="icon" asChild>
             <Link href="/cart">

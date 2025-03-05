@@ -6,9 +6,10 @@ import { ArrowLeft, ShoppingCart, Star, Truck, Shield, RotateCcw, Heart } from "
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { CrochetItem } from "@/lib/data";
+import { ProductTypes } from "@/app/constants/type";
 
 interface ProductClientProps {
-  product: CrochetItem;
+  product: ProductTypes;
 }
 
 export default function ProductClient({ product }: ProductClientProps) {
