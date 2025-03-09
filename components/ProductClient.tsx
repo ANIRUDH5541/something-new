@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from 'react';
 import { useRouter } from "next/navigation";
 import { ArrowLeft, ShoppingCart, Star, Truck, Shield, RotateCcw, Heart, ChevronRight } from "lucide-react";
@@ -19,17 +21,20 @@ export default function EnhancedProductClient({ product }: ProductClientProps) {
   const handleAddToCart = () => {
     setIsAdding(true);
     
-    const existingCartItems = JSON.parse(localStorage.getItem('cartItems') || '[]');
+    const existingCartItems: ProductTypes[] = JSON.parse(localStorage.getItem('cartItems') || '[]');
     const existingItemIndex = existingCartItems.findIndex(
-      (item: any) => item.id === product.id
+      (item: ProductTypes) => item.id === product.id
     );
     
     if (existingItemIndex >= 0) {
-      existingCartItems[existingItemIndex].quantity += quantity;
+      // Update existing item's selectedCount
+      existingCartItems[existingItemIndex].selectedCount = 
+        (existingCartItems[existingItemIndex].selectedCount || 0) + quantity;
     } else {
+      // Add new item with selectedCount
       existingCartItems.push({
         ...product,
-        quantity
+        selectedCount: quantity
       });
     }
     
@@ -46,6 +51,7 @@ export default function EnhancedProductClient({ product }: ProductClientProps) {
     }, 500);
   };
 
+  // Rest of the component remains the same
   return (
     <div className="">
       <div className="max-w-7xl mx-auto px-4 py-12">
@@ -147,7 +153,6 @@ export default function EnhancedProductClient({ product }: ProductClientProps) {
               </div>
             </div>
             
-            {/* Product Features */}
             <div className="border-t border-amber-200 pt-6 mt-6 space-y-4">
               <div className="flex items-center gap-4 group">
                 <Truck className="h-6 w-6 text-amber-600 group-hover:text-amber-800 transition-colors" />

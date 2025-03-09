@@ -29,11 +29,11 @@ export default function RootLayout({
         >
           <ProductProvider>
             <div
-              className="bg-gradient-to-br from-pink-100 via-purple-100 to-blue-100 min-h-screen  px-4 py-12 overflow-hidden"
+              className="bg-gradient-to-br from-pink-100 via-purple-100 to-blue-100 min-h-screen  px-4 pb-12 pt-7 overflow-hidden"
 
             >
               <Navbar/>
-              <main>{children}</main>
+              <main className='overflow-x-hidden'>{children}</main>
             </div>
             <Toaster />
           </ProductProvider>

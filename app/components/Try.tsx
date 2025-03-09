@@ -4,8 +4,8 @@ import React from 'react';
 
 const CrochetHero = () => {
   return (
-    <div className='flex flex-col items-center'>
-      <div className="text-center max-w-3xl z-10 my-16">
+    <div className='flex flex-col items-center z-10'>
+      <div className="text-center max-w-3xl my-16">
         <h1 className="text-5xl font-bold mb-4 leading-tight text-amber-800">
           Handcrafted Crochet<br />Made with Love
         </h1>

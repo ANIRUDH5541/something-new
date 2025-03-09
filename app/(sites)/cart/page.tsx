@@ -2,15 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Trash2 } from "lucide-react";
+import { ArrowLeft, Trash2, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { CheckCircle2 } from "lucide-react";
 import { DM_Sans } from "next/font/google";
 import { ProductTypes } from "@/app/constants/type";
-import { POST_purchase } from "@/app/lib/action";
 
 const SANSFont = DM_Sans({
   weight: '400',
@@ -19,7 +17,7 @@ const SANSFont = DM_Sans({
 });
 
 interface CartItem extends ProductTypes {
-  selectedCount: number; 
+  selectedCount: number;
 }
 
 export default function CartPage() {
@@ -32,12 +30,8 @@ export default function CartPage() {
   useEffect(() => {
     const storedItems = localStorage.getItem('cartItems');
     if (storedItems) {
-      const parsedItems: ProductTypes[] = JSON.parse(storedItems);
-      const itemsWithCount = parsedItems.map(item => ({
-        ...item,
-        selectedCount: item.count || 1
-      }));
-      setCartItems(itemsWithCount);
+      const parsedItems: CartItem[] = JSON.parse(storedItems);
+      setCartItems(parsedItems);
     }
     setIsLoaded(true);
   }, []);
@@ -83,7 +77,7 @@ export default function CartPage() {
         throw new Error(errorData.message);
       }
   
-      const result = await response.json();
+      await response.json();
       setShowSuccessDialog(true);
       
     } catch (err) {
@@ -113,8 +107,8 @@ export default function CartPage() {
   }
 
   return (
-    <section className="w-full">      
-      <h1 className={`${SANSFont.className} text-4xl font-bold mb-8 mt-20 text-center text-amber-900`}>
+    <section className="w-full container mx-auto px-4 py-12">
+      <h1 className={`${SANSFont.className} text-4xl font-bold mb-8 text-center text-amber-900`}>
         Your Shopping Cart
       </h1>
 
@@ -150,7 +144,7 @@ export default function CartPage() {
               <Card key={item.id} className="mb-4 hover:shadow-md transition-shadow">
                 <CardContent className="p-4">
                   <div className="flex gap-4">
-                    <div className="relative w-36 ">
+                    <div className="relative w-36">
                       <img
                         src={item.image}
                         alt={item.name}
